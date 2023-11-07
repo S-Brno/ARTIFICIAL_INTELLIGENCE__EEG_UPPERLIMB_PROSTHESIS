@@ -1,0 +1,77 @@
+# Importando as bibliotecas necessárias
+import pandas as pd  # Para manipulação de dados
+import numpy as np   # Para operações numéricas
+from sklearn.model_selection import train_test_split  # Para dividir os dados em conjuntos de treinamento e teste
+from sklearn.neighbors import KNeighborsClassifier  # Para o modelo KNN
+from sklearn.svm import SVC  # Para o modelo SVM
+from sklearn.neural_network import MLPClassifier  # Para o modelo RNA
+from sklearn.ensemble import VotingClassifier  # Para a combinação de modelos
+from sklearn.metrics import confusion_matrix, accuracy_score, mean_squared_error  # Métricas de avaliação
+import matplotlib.pyplot as plt  # Para plotar gráficos
+import seaborn as sns  # Para gráficos mais avançados
+import warnings
+warnings.filterwarnings("ignore")  # Ignora avisos durante a execução
+
+# Leitura e pré-processamento dos dados
+data = pd.read_csv('1_Dataset_CALIBRACAO_ESTIMULOVISUAL.csv')  # Lê os dados de um arquivo CSV
+data = data.dropna()  # Remove linhas com valores ausentes
+
+data['AF3'] = data['AF3'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['AF3'] = data['AF3'] / 100000000  # Divide por 100000000
+data['T7'] = data['T7'].str replace('.', '').astype(float)
+data['T7'] = data['T7'] / 100000000
+data['Pz'] = data['Pz'].str replace('.', '').astype(float)
+data['Pz'] = data['Pz'] / 100000000
+data['T8'] = data['T8'].str replace('.', '').astype(float)
+data['T8'] = data['T8'] / 100000000
+data['AF4'] = data['AF4'].str replace('.', '').astype(float)
+data['AF4'] = data['AF4'] / 100000000
+
+X = data.drop('DESEJO', axis=1)  # Cria um DataFrame com os recursos (X)
+y = data['DESEJO']  # Cria uma Série com os rótulos (y)
+
+scoresKNN = []  # Lista para armazenar as precisões do KNN
+scoresSVM = []  # Lista para armazenar as precisões do SVM
+scoresRNA = []  # Lista para armazenar as precisões da RNA
+
+for i in range(10):
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)  # Divide os dados em conjuntos de treinamento e teste
+  knn_model = KNeighborsClassifier()  # Cria um modelo KNN
+  knn_model.fit(X_train, y_train)  # Treina o modelo KNN
+  precisaoKNN = knn_model.score(X_test, y_test)  # Calcula a precisão e a armazena
+  scoresKNN.append(precisaoKNN)  # Adiciona a precisão à lista
+
+  svm_model = SVC()  # Cria um modelo SVM
+  svm_model.fit(X_train, y_train)  # Treina o modelo SVM
+  precisaoSVM = svm_model.score(X_test, y_test)  # Calcula a precisão e a armazena
+  scoresSVM.append(precisaoSVM)  # Adiciona a precisão à lista
+
+  rna_model = MLPClassifier()  # Cria um modelo RNA
+  rna_model.fit(X_train, y_train)  # Treina o modelo RNA
+  precisaoRNA = rna_model.score(X_test, y_test)  # Calcula a precisão e a armazena
+  scoresRNA.append(precisaoRNA)  # Adiciona a precisão à lista
+
+sns.distplot(scoresKNN)  # Cria um gráfico de distribuição das precisões do KNN
+plt.ylabel("Frequência")  # Define o rótulo do eixo y
+plt.title("Acurácias do KNN")  # Define o título do gráfico
+plt.show()  # Mostra o gráfico
+
+sns.distplot(scoresSVM)  # Cria um gráfico de distribuição das precisões do SVM
+plt.ylabel("Frequência")  # Define o rótulo do eixo y
+plt.title("Acurácias do SVM")  # Define o título do gráfico
+plt.show()  # Mostra o gráfico
+
+sns.distplot(scoresRNA)  # Cria um gráfico de distribuição das precisões da RNA
+plt.ylabel("Frequência")  # Define o rótulo do eixo y
+plt.title("Acurácias da RNA")  # Define o título do gráfico
+plt.show()  # Mostra o gráfico
+
+# Calcula e imprime estatísticas das precisões
+print("Média do KNN: {:.2f}%".format(np.mean(scoresKNN) * 100))
+print("Desvio padrão do KNN: {:.2f}%".format(np.std(scoresKNN) * 100))
+
+print("Média do SVM: {:.2f}%".format(np.mean(scoresSVM) * 100))
+print("Desvio padrão do SVM: {:.2f}%".format(np.std(scoresSVM) * 100))
+
+print("Média da RNA: {:.2f}%".format(np.mean(scoresRNA) * 100))
+print("Desvio padrão da RNA: {:.2f}%".format(np.std(scoresRNA) * 100))
