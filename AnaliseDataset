@@ -1,0 +1,62 @@
+# Importando as bibliotecas necessárias
+import pandas as pd  # Biblioteca para manipulação de dados
+import matplotlib.pyplot as plt  # Biblioteca para geração de gráficos
+import seaborn as sns  # Biblioteca para visualização de dados estatísticos
+import warnings  # Biblioteca para ignorar avisos durante a execução
+warnings.filterwarnings("ignore")  # Ignora avisos durante a execução
+
+# Leitura e pré-processamento dos dados
+data = pd.read_csv('1_Dataset_CALIBRACAO_ESTIMULOVISUAL.csv')  # Lê os dados de um arquivo CSV
+#data = pd.read_csv('2_Dataset_CALIBRACAO_ESTIMULOVOCAL.csv')
+#data = pd.read_csv('3_Dataset_CALIBRACAO_ESTIMULOMISTO.csv')
+#data = pd.read_csv('4_Dataset_ACAO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('5_Dataset_ACAO_REFORCADO.csv')
+#data = pd.read_csv('6_Dataset_SENTIMENTO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('7_Dataset_SENTIMENTO_REFORCADO.csv')
+
+# Excluir linhas com valores nulos
+data = data.dropna()
+
+data['AF3'] = data['AF3'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['AF3'] = data['AF3'] / 100000000  # Divide por 100000000
+data['T7'] = data['T7'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['T7'] = data['T7'] / 100000000  # Divide por 100000000
+data['Pz'] = data['Pz'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['Pz'] = data['Pz'] / 100000000  # Divide por 100000000
+data['T8'] = data['T8'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['T8'] = data['T8'] / 100000000  # Divide por 100000000
+data['AF4'] = data['AF4'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['AF4'] = data['AF4'] / 100000000  # Divide por 100000000
+
+# Suponha que as colunas estejam nomeadas como 'Canal1', 'Canal2', 'Canal3', 'Canal4', 'Canal5'
+canais_interesse = data[['AF3', 'T7', 'Pz', 'T8', 'AF4']]
+
+# Substitua 'DESEJO' pelo nome da sua coluna de saída
+classes = data['DESEJO'].unique()
+
+# Passe a coluna `DESEJO` para o argumento `hue`
+sns.pairplot(data, hue='DESEJO', vars=canais_interesse, plot_kws={'alpha': 0.5}, palette={0: 'red', 1: 'blue'})
+plt.show()
+
+data = pd.read_csv('1_Dataset_CALIBRACAO_ESTIMULOVOCAL.csv')
+#data = pd.read_csv('2_Dataset_CALIBRACAO_ESTIMULOVOCAL.csv')
+#data = pd.read_csv('3_Dataset_CALIBRACAO_ESTIMULOMISTO.csv')
+#data = pd.read_csv('4_Dataset_ACAO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('5_Dataset_ACAO_REFORCADO.csv')
+#data = pd.read_csv('6_Dataset_SENTIMENTO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('7_Dataset_SENTIMENTO_REFORCADO.csv')
+
+data['AF3'] = data['AF3'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['AF3'] = data['AF3'] / 100000000  # Divide por 100000000
+data['T7'] = data['T7'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['T7'] = data['T7'] / 100000000  # Divide por 100000000
+data['Pz'] = data['Pz'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['Pz'] = data['Pz'] / 100000000  # Divide por 100000000
+data['T8'] = data['T8'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['T8'] = data['T8'] / 100000000  # Divide por 100000000
+data['AF4'] = data['AF4'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
+data['AF4'] = data['AF4'] / 100000000  # Divide por 100000000
+colunas_interesse = ['AF3', 'T7', 'Pz', 'T8', 'AF4']
+dados_canais = data[colunas_interesse]
+estatisticas = dados_canais.agg(['mean', 'std', 'min', 'max'])
+print(estatisticas)
