@@ -1,0 +1,93 @@
+data = pd.read_csv('4_Dataset_ACAO_PENSAMENTOPURO.csv')
+data = data.dropna()
+
+data['AF3'] = data['AF3'].str replace('.', '').astype(float)
+data['AF3'] = data['AF3'] / 100000000
+data['T7'] = data['T7'].str replace('.', '').astype(float)
+data['T7'] = data['T7'] / 100000000
+data['Pz'] = data['Pz'].str replace('.', '').astype(float)
+data['Pz'] = data['Pz'] / 100000000
+data['T8'] = data['T8'].str replace('.', '').astype(float)
+data['T8'] = data['T8'] / 100000000
+data['AF4'] = data['AF4'].str replace('.', '').astype(float)
+data['AF4'] = data['AF4'] / 100000000
+
+X = data.drop('DESEJO', axis=1)
+y = data['DESEJO']
+
+# Divisão dos dados em conjuntos de treinamento e teste (70/30)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Etapa 2: Seleção de Modelos
+# Escolha os três modelos de IA: KNN, SVM e RNA
+knn_model = KNeighborsClassifier()
+svm_model = SVC()
+rna_model = MLPClassifier()
+
+# Treine os modelos com os dados de treinamento
+knn_model.fit(X_train, y_train)
+svm_model.fit(X_train, y_train)
+rna_model.fit(X_train, y_train)
+
+# Etapa 3: Combinação de Previsões
+# Use a técnica de votação de maioria para combinar as previsões dos modelos
+voting_classifier = VotingClassifier(estimators=[('knn', knn_model), ('svm', svm_model), ('rna', rna_model)], voting='hard')
+voting_classifier.fit(X_train, y_train)
+
+# Etapa 4: Avaliação de Desempenho
+# Compare o desempenho do CIA com os modelos individuais usando métricas
+
+# Previsões do modelo de votação
+y_pred_voting = voting_classifier.predict(X_test)
+
+# Previsões dos modelos individuais
+y_pred_knn = knn_model.predict(X_test)
+y_pred_svm = svm_model.predict(X_test)
+y_pred_rna = rna_model.predict(X_test)
+
+# Matriz de Confusão
+confusion_voting = confusion_matrix(y_test, y_pred_voting)
+confusion_knn = confusion_matrix(y_test, y_pred_knn)
+confusion_svm = confusion_matrix(y_test, y_pred_svm)
+confusion_rna = confusion_matrix(y_test, y_pred_rna)
+
+# Acurácia
+accuracy_voting = accuracy_score(y_test, y_pred_voting)
+accuracy_knn = accuracy_score(y_test, y_pred_knn)
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+accuracy_rna = accuracy_score(y_test, y_pred_rna)
+
+# Raiz do Erro Quadrático Médio (RMSE) - Se os rótulos forem numéricos, não categóricos
+rmse_voting = np.sqrt(mean_squared_error(y_test, y_pred_voting))
+rmse_knn = np.sqrt(mean_squared_error(y_test, y_pred_knn))
+rmse_svm = np.sqrt(mean_squared_error(y_test, y_pred_svm))
+rmse_rna = np.sqrt(mean_squared_error(y_test, y_pred_rna)
+
+# Histograma das previsões do modelo de votação
+plt.hist(y_pred_voting, bins=10, alpha=0.5, label='Previsões do Modelo de Votação')
+plt.hist(y_test, bins=10, alpha=0.5, label='Rótulos Reais')
+plt.legend(loc='upper right')
+plt.xlabel('Classe')
+plt.ylabel('Frequência')
+plt.show()
+
+# Imprimir resultados
+print("Matriz de Confusão do Modelo de Votação:")
+print(confusion_voting)
+print("Acurácia do Modelo de Votação:", accuracy_voting)
+print("RMSE do Modelo de Votação:", rmse_voting)
+
+print("\nMatriz de Confusão do Modelo KNN:")
+print(confusion_knn)
+print("Acurácia do Modelo KNN:", accuracy_knn)
+print("RMSE do Modelo KNN:", rmse_knn)
+
+print("\nMatriz de Confusão do Modelo SVM:")
+print(confusion_svm)
+print("Acurácia do Modelo SVM:", accuracy_svm)
+print("RMSE do Modelo SVM:", rmse_svm)
+
+print("\nMatriz de Confusão do Modelo RNA:")
+print(confusion_rna)
+print("Acurácia do Modelo RNA:", accuracy_rna)
+print("RMSE do Modelo RNA:", rmse_rna)
