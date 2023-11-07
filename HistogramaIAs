@@ -14,6 +14,13 @@ warnings.filterwarnings("ignore")  # Ignora avisos durante a execução
 
 # Leitura e pré-processamento dos dados
 data = pd.read_csv('1_Dataset_CALIBRACAO_ESTIMULOVISUAL.csv')  # Lê os dados de um arquivo CSV
+#data = pd.read_csv('2_Dataset_CALIBRACAO_ESTIMULOVOCAL.csv')
+#data = pd.read_csv('3_Dataset_CALIBRACAO_ESTIMULOMISTO.csv')
+#data = pd.read_csv('4_Dataset_ACAO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('5_Dataset_ACAO_REFORCADO.csv')
+#data = pd.read_csv('6_Dataset_SENTIMENTO_PENSAMENTOPURO.csv')
+#data = pd.read_csv('7_Dataset_SENTIMENTO_REFORCADO.csv')
+
 data = data.dropna()  # Remove linhas com valores ausentes
 
 data['AF3'] = data['AF3'].str.replace('.', '').astype(float)  # Remove pontos e converte para float
